@@ -1,11 +1,11 @@
 %option noyywrap nodefault yylineno case-insensitive
 %{
-#include "pmysql.tab.h"
+#include "y.tab.h"
 #include <stdarg.h>
 #include <string.h>
 void yyerror(char *s, ...); int oldstate;
 %}
-%x COMMENT
+%x COMMENTS
 %s BTWMODE
 
 %%
@@ -291,7 +291,7 @@ COUNT                 {
 
     /* names */
 [A-Za-z][A-Za-z0-9_]* { yylval.strval = strdup(yytext); return NAME; }
-`[^`/\\.\n]+` `[^`\n]*$ { yylval.strval = strdup(yytext+1); yylval.strval[yyleng-2] = 0; return NAME; }
+`[^`/\\.\n]+`\ `[^`\n]*$ { yylval.strval = strdup(yytext+1); yylval.strval[yyleng-2] = 0; return NAME; }
 `[^`\n]*$             { yyerror("unterminated quoted name %s", yytext); }
 
  /* user variables */
@@ -306,10 +306,10 @@ COUNT                 {
  /* comments */
 #.*                   ;
 "--"[ \t].*           ;
-"/*"                  { oldstate = YY_START; BEGIN COMMENT; }
-<COMMENT>"*/"         { BEGIN oldstate; }
-<COMMENT>.|\n         ;
-<COMMENT><<EOF>>      { yyerror("unclosed comment"); }
+"/*"                  { oldstate = YY_START; BEGIN COMMENTS; }
+<COMMENTS>"*/"         { BEGIN oldstate; }
+<COMMENTS>.|\n         ;
+<COMMENTS><<EOF>>      { yyerror("unclosed comment"); }
   /* everything else */
 [ \t\n] /* whitespace */
 . { yyerror("mystery character '%c'", *yytext); }
