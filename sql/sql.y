@@ -776,7 +776,7 @@ int main(int ac, char **av)
   }
 
   if(!yyparse())
-    printf("SQL parse worked\n");
+    printf("SQL parse succeed\n");
   else
     printf("SQL parse failed\n");
   return 0;
